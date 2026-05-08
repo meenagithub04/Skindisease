@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DermOS | Secure Clinical Access</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "tertiary-fixed": "#dee3ea",
+          "surface-container-low": "#f2f4f6",
+          "background": "#f7f9fb",
+          "on-background": "#191c1e",
+          "primary-container": "#004a99",
+          "secondary-container": "#6bfe9c",
+          "on-error-container": "#93000a",
+          "inverse-surface": "#2d3133",
+          "surface": "#f7f9fb",
+          "on-primary-fixed-variant": "#00458f",
+          "error": "#ba1a1a",
+          "on-secondary-fixed": "#00210c",
+          "primary-fixed": "#d7e2ff",
+          "secondary-fixed-dim": "#4ae183",
+          "outline-variant": "#c2c6d3",
+          "on-surface": "#191c1e",
+          "tertiary-fixed-dim": "#c2c7ce",
+          "surface-tint": "#255dad",
+          "surface-bright": "#f7f9fb",
+          "on-secondary-container": "#00743a",
+          "on-secondary-fixed-variant": "#005228",
+          "on-tertiary": "#ffffff",
+          "error-container": "#ffdad6",
+          "on-tertiary-fixed": "#171c21",
+          "on-surface-variant": "#424751",
+          "inverse-primary": "#abc7ff",
+          "surface-dim": "#d8dadc",
+          "surface-container": "#eceef0",
+          "surface-container-high": "#e6e8ea",
+          "on-primary": "#ffffff",
+          "on-primary-container": "#9bbdff",
+          "on-error": "#ffffff",
+          "primary": "#00346f",
+          "secondary-fixed": "#6bfe9c",
+          "tertiary-container": "#474d53",
+          "on-secondary": "#ffffff",
+          "on-tertiary-fixed-variant": "#42474d",
+          "outline": "#737783",
+          "on-primary-fixed": "#001b3f",
+          "surface-container-lowest": "#ffffff",
+          "inverse-on-surface": "#eff1f3",
+          "on-tertiary-container": "#b8bdc4",
+          "secondary": "#006d37",
+          "tertiary": "#31363c",
+          "surface-variant": "#e0e3e5",
+          "primary-fixed-dim": "#abc7ff",
+          "surface-container-highest": "#e0e3e5"
+        },
+        fontFamily: {
+          "headline": ["Manrope"],
+          "body": ["Inter"],
+          "label": ["Inter"]
+        },
+        borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+      },
+    },
+  }
+</script>
+<style>
+  body {
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%23004a99'><path d='M7,2V4H8V7L6.5,8.5C5.27,9.73 5.27,11.77 6.5,13L9,15.5V22H15V15.5L17.5,13C18.73,11.77 18.73,9.73 17.5,8.5L16,7V4H17V2H7M10,4H14V6.5L15.5,8H8.5L10,6.5V4Z'/></svg>"), auto;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+  .floating-icon {
+    filter: drop-shadow(0 20px 30px rgba(0, 52, 111, 0.15));
+  }
+  .perspective-container { perspective: 1200px; }
+  .tilt-card { transform: rotateX(2deg) rotateY(-2deg); }
+  input:invalid { box-shadow: 0 0 0 2px rgba(186, 26, 26, 0.2); }
+  #otp-field.hidden { display: none; }
+
+  #loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #00346f 0%, #004a99 50%, #001b3f 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.6s ease;
+  }
+  #loading-overlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .pill-ring {
+    position: relative;
+    width: 140px;
+    height: 140px;
+  }
+  .pill-ring .pill {
+    position: absolute;
+    width: 14px;
+    height: 7px;
+    border-radius: 9999px;
+    top: 50%;
+    left: 50%;
+    margin-left: -7px;
+    margin-top: -3.5px;
+    animation: pillFade 1.4s linear infinite;
+  }
+  .pill:nth-child(1)  { transform: rotate(0deg)   translateX(55px); animation-delay: 0s;      background: #abc7ff; }
+  .pill:nth-child(2)  { transform: rotate(30deg)  translateX(55px); animation-delay: 0.12s;   background: #4ae183; }
+  .pill:nth-child(3)  { transform: rotate(60deg)  translateX(55px); animation-delay: 0.23s;   background: #abc7ff; }
+  .pill:nth-child(4)  { transform: rotate(90deg)  translateX(55px); animation-delay: 0.35s;   background: #4ae183; }
+  .pill:nth-child(5)  { transform: rotate(120deg) translateX(55px); animation-delay: 0.47s;   background: #abc7ff; }
+  .pill:nth-child(6)  { transform: rotate(150deg) translateX(55px); animation-delay: 0.58s;   background: #4ae183; }
+  .pill:nth-child(7)  { transform: rotate(180deg) translateX(55px); animation-delay: 0.70s;   background: #abc7ff; }
+  .pill:nth-child(8)  { transform: rotate(210deg) translateX(55px); animation-delay: 0.82s;   background: #4ae183; }
+  .pill:nth-child(9)  { transform: rotate(240deg) translateX(55px); animation-delay: 0.93s;   background: #abc7ff; }
+  .pill:nth-child(10) { transform: rotate(270deg) translateX(55px); animation-delay: 1.05s;   background: #4ae183; }
+  .pill:nth-child(11) { transform: rotate(300deg) translateX(55px); animation-delay: 1.17s;   background: #abc7ff; }
+  .pill:nth-child(12) { transform: rotate(330deg) translateX(55px); animation-delay: 1.28s;   background: #4ae183; }
+  @keyframes pillFade {
+    0%   { opacity: 1;   transform: rotate(var(--r, 0deg)) translateX(55px) scale(1.1); }
+    50%  { opacity: 0.3; }
+    100% { opacity: 0.1; transform: rotate(var(--r, 0deg)) translateX(55px) scale(0.9); }
+  }
+  #loading-percent {
+    margin-top: 28px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #abc7ff;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 20px rgba(171, 199, 255, 0.5);
+  }
+  #loading-label {
+    margin-top: 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #4ae183;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+</style>
+</head>
+
+<body class="bg-background font-body text-on-background selection:bg-secondary-fixed selection:text-on-secondary-fixed overflow-x-hidden">
+
+<!-- PILL LOADING OVERLAY -->
+<div id="loading-overlay">
+  <div class="pill-ring">
+    <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+    <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+    <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+    <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+  </div>
+  <div id="loading-percent">0%</div>
+  <div id="loading-label">Initializing DermOS Terminal...</div>
+</div>
+
+<!-- 3D BACKGROUND -->
+<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+  <div class="absolute inset-0 bg-gradient-to-br from-primary via-primary-container to-surface"></div>
+  <div class="absolute inset-0 opacity-20 mix-blend-overlay" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBEtEHZaFjWSGMbvrGn5x5F2cpRcvLN0zUThXrhV1VxgrnAtPgwm8oE9DHNSrYCVEo7SKfPg5pUg1lSMfU3F1DD3GkkYGrC2kO20CUzL0lH_UiC1dUgNofOC0Hy3naJycG9YrphiCyhjjpg8VOSzHX3Q6hTL7-dAX90vOzTTTkv3NMEjmAGdYQjXlXVhayi6Ydw9waB2mmiW7Y0X6l_M_GAfVwlsJNr1VOJO4kTvrsV9TGjf8zLFXChv9a5VunpJVuIdsolm-xaKdw'); background-size: cover; background-position: center;"></div>
+  <div class="absolute top-[10%] left-[15%] floating-icon opacity-40">
+    <span class="material-symbols-outlined text-[120px] text-secondary-fixed-dim select-none" style="font-variation-settings: 'FILL' 1;">pill</span>
+  </div>
+  <div class="absolute bottom-[20%] right-[10%] floating-icon opacity-30">
+    <span class="material-symbols-outlined text-[160px] text-primary-fixed select-none" style="font-variation-settings: 'FILL' 1;">vaccines</span>
+  </div>
+  <div class="absolute top-[60%] left-[5%] floating-icon opacity-20">
+    <span class="material-symbols-outlined text-[80px] text-tertiary-fixed-dim select-none">biotech</span>
+  </div>
+  <div class="absolute top-[20%] right-[25%] floating-icon opacity-25">
+    <span class="material-symbols-outlined text-[100px] text-secondary select-none" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+  </div>
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,52,111,0.4)_100%)]"></div>
+</div>
+
+<!-- LOGIN CARD -->
+<main class="relative z-10 min-h-screen flex items-center justify-center p-6 perspective-container">
+  <div class="tilt-card glass-panel w-full max-w-[520px] rounded-[2.5rem] p-10 flex flex-col gap-6 shadow-[0_32px_64px_-12px_rgba(0,27,63,0.25)] border border-white/30 my-10">
+    <!-- Branding -->
+    <div class="flex flex-col items-center text-center gap-2">
+      <div class="w-16 h-16 bg-gradient-to-tr from-primary to-primary-container rounded-2xl flex items-center justify-center mb-2 shadow-lg shadow-primary/20">
+        <span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings: 'FILL' 1;">dermatology</span>
+      </div>
+      <h1 class="font-headline text-3xl font-black text-primary tracking-tighter uppercase">DermOS</h1>
+      <p class="font-headline text-on-surface-variant font-bold text-sm tracking-widest uppercase opacity-70">Secure Clinical Access</p>
+    </div>
+
+    <!-- Login Form -->
+    <form class="flex flex-col gap-5" id="login-form">
+      <!-- Username -->
+      <div class="flex flex-col gap-1.5">
+        <label class="font-label text-[10px] font-bold text-primary tracking-wider uppercase pl-2">Username</label>
+        <div class="relative group">
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 group-focus-within:text-primary transition-colors">
+            <span class="material-symbols-outlined text-xl">person</span>
+          </div>
+          <input class="w-full bg-surface-container-highest/40 border-none rounded-2xl py-3.5 pl-12 pr-4 font-body text-sm text-on-surface placeholder:text-outline-variant focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Clinical_ID_01" required type="text"/>
+        </div>
+      </div>
+
+      <!-- Gmail -->
+      <div class="flex flex-col gap-1.5">
+        <label class="font-label text-[10px] font-bold text-primary tracking-wider uppercase pl-2">Gmail Address</label>
+        <div class="relative group">
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 group-focus-within:text-primary transition-colors">
+            <span class="material-symbols-outlined text-xl">mail</span>
+          </div>
+          <input class="w-full bg-surface-container-highest/40 border-none rounded-2xl py-3.5 pl-12 pr-4 font-body text-sm text-on-surface placeholder:text-outline-variant focus:ring-2 focus:ring-primary/20 transition-all outline-none" pattern="[a-z0-9._%+\-]+@gmail\.com$" placeholder="doctor.name@gmail.com" required title="Please use a valid Gmail address" type="email"/>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="flex flex-col gap-1.5">
+        <label class="font-label text-[10px] font-bold text-primary tracking-wider uppercase pl-2">Security Key (Min 8 Characters)</label>
+        <div class="relative group">
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 group-focus-within:text-primary transition-colors">
+            <span class="material-symbols-outlined text-xl">key</span>
+          </div>
+          <input class="w-full bg-surface-container-highest/40 border-none rounded-2xl py-3.5 pl-12 pr-4 font-body text-sm text-on-surface placeholder:text-outline-variant focus:ring-2 focus:ring-primary/20 transition-all outline-none" minlength="8" placeholder="••••••••" required type="password"/>
+        </div>
+      </div>
+
+      <!-- OTP -->
+      <div class="flex flex-col gap-1.5" id="otp-container">
+        <label class="font-label text-[10px] font-bold text-primary tracking-wider uppercase pl-2">Two-Factor Authentication</label>
+        <div class="flex gap-2">
+          <div class="relative group flex-1">
+            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 group-focus-within:text-primary transition-colors">
+              <span class="material-symbols-outlined text-xl">smartphone</span>
+            </div>
+            <input class="w-full bg-surface-container-highest/40 border-none rounded-2xl py-3.5 pl-12 pr-4 font-body text-sm text-on-surface placeholder:text-outline-variant focus:ring-2 focus:ring-primary/20 transition-all outline-none" id="mobile-input" placeholder="+91 98765 43210" type="tel"/>
+          </div>
+          <button class="px-4 bg-primary/10 text-primary font-bold text-[10px] uppercase tracking-wider rounded-2xl hover:bg-primary hover:text-white transition-all whitespace-nowrap" id="send-otp-btn" type="button">Send OTP</button>
+        </div>
+        <div class="relative group mt-2 hidden" id="otp-field">
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 group-focus-within:text-primary transition-colors">
+            <span class="material-symbols-outlined text-xl">domain_verification</span>
+          </div>
+          <input class="w-full bg-surface-container-highest/40 border-none rounded-2xl py-3.5 pl-12 pr-4 font-body text-sm text-on-surface placeholder:text-outline-variant focus:ring-2 focus:ring-primary/20 transition-all outline-none" maxlength="6" placeholder="Verification Code" type="text"/>
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-secondary-fixed-dim uppercase">Active</span>
+        </div>
+      </div>
+
+      <!-- Trust & Recovery -->
+      <div class="flex items-center justify-between px-2">
+        <label class="flex items-center gap-2 cursor-pointer group">
+          <input class="w-4 h-4 rounded border-none bg-surface-container-highest/60 text-primary focus:ring-offset-0 focus:ring-primary/20 transition-all" type="checkbox"/>
+          <span class="text-[10px] font-semibold text-on-surface-variant group-hover:text-primary transition-colors">Trust Terminal</span>
+        </label>
+        <a class="text-[10px] font-bold text-primary hover:text-secondary transition-colors underline underline-offset-4 decoration-primary/20" href="#">Recovery Protocol</a>
+      </div>
+
+      <!-- Submit Button -->
+      <button class="group relative w-full bg-gradient-to-br from-primary to-primary-container text-white font-headline font-extrabold text-sm tracking-widest uppercase py-4.5 rounded-2xl shadow-xl shadow-primary/20 transition-all duration-300 active:scale-[0.98] overflow-hidden mt-2" type="submit">
+        <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <span class="relative flex items-center justify-center gap-2 py-1">
+          Initialize Session
+          <span class="material-symbols-outlined text-lg">login</span>
+        </span>
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="mt-2 pt-6 border-t border-primary/5 flex flex-col gap-4 text-center">
+      <div class="flex justify-center gap-3">
+        <span class="px-3 py-1 bg-secondary-container/30 text-on-secondary-container text-[9px] font-black rounded-full uppercase tracking-tighter">AES-256 Encrypted</span>
+      </div>
+      <p class="text-[9px] leading-relaxed text-on-surface-variant font-medium opacity-60">
+        UNAUTHORIZED ACCESS IS PROHIBITED. <br/> ALL SESSIONS ARE CLINICALLY MONITORED UNDER HIPAA COMPLIANCE.
+      </p>
+    </div>
+  </div>
+
+  <!-- Accents -->
+  <div class="absolute bottom-10 left-10 flex items-center gap-4 text-white/50">
+    <div class="w-1.5 h-1.5 rounded-full bg-secondary-fixed animate-pulse"></div>
+    <span class="text-[10px] font-headline font-bold uppercase tracking-[0.2em]">Sanctuary Node: Active</span>
+  </div>
+  <div class="absolute top-10 right-10 flex items-center gap-6">
+    <button class="p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all backdrop-blur-md">
+      <span class="material-symbols-outlined">help</span>
+    </button>
+    <button class="p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all backdrop-blur-md">
+      <span class="material-symbols-outlined">language</span>
+    </button>
+  </div>
+</main>
+
+<script>
+  // PILL LOADING ANIMATION
+  const overlay = document.getElementById('loading-overlay');
+  const percentText = document.getElementById('loading-percent');
+  const loadingLabel = document.getElementById('loading-label');
+
+  const labels = [
+    'Initializing DermOS Terminal...',
+    'Loading Analysis Model...',
+    'Establishing Secure Connection...',
+    'Ready.'
+  ];
+
+  let percent = 0;
+  const timer = setInterval(() => {
+    percent += Math.floor(Math.random() * 12) + 4;
+    if (percent >= 100) {
+      percent = 100;
+      percentText.innerText = '100%';
+      loadingLabel.innerText = 'Ready.';
+      clearInterval(timer);
+      setTimeout(() => {
+        overlay.classList.add('fade-out');
+        setTimeout(() => overlay.style.display = 'none', 600);
+      }, 400);
+    } else {
+      percentText.innerText = percent + '%';
+      if (percent < 30) loadingLabel.innerText = labels[0];
+      else if (percent < 60) loadingLabel.innerText = labels[1];
+      else if (percent < 85) loadingLabel.innerText = labels[2];
+      else loadingLabel.innerText = labels[3];
+    }
+  }, 120);
+
+  // OTP FLOW
+  const sendOtpBtn = document.getElementById('send-otp-btn');
+  const otpField = document.getElementById('otp-field');
+  const mobileInput = document.getElementById('mobile-input');
+
+  sendOtpBtn.addEventListener('click', () => {
+    if (mobileInput.value.trim() !== '') {
+      otpField.classList.remove('hidden');
+      sendOtpBtn.innerText = 'Resend';
+      sendOtpBtn.classList.replace('bg-primary/10', 'bg-secondary-container/30');
+      sendOtpBtn.classList.replace('text-primary', 'text-on-secondary-container');
+    } else {
+      mobileInput.focus();
+    }
+  });
+
+  // LOGIN → UPLOAD REDIRECT
+  document.getElementById('login-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    window.location.href = 'upload.html';
+  });
+</script>
+</body></html>

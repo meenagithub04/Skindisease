@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DermOS | Clinical History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "tertiary-fixed": "#dee3ea","surface-container-low": "#1a1c1e","background": "#0a0c10",
+          "on-background": "#e2e2e6","primary-container": "#004a99","secondary-container": "#005228",
+          "on-error-container": "#ffdad6","inverse-surface": "#e2e2e6","surface": "#0a0c10",
+          "on-primary-fixed-variant": "#abc7ff","error": "#ffb4ab","on-secondary-fixed": "#00210c",
+          "primary-fixed": "#d7e2ff","secondary-fixed-dim": "#4ae183","outline-variant": "#424751",
+          "on-surface": "#e2e2e6","tertiary-fixed-dim": "#c2c7ce","surface-tint": "#abc7ff",
+          "surface-bright": "#38393e","on-secondary-container": "#6bfe9c","on-secondary-fixed-variant": "#005228",
+          "on-tertiary": "#000000","error-container": "#93000a","on-tertiary-fixed": "#171c21",
+          "on-surface-variant": "#c2c6d3","inverse-primary": "#005db6","surface-dim": "#111318",
+          "surface-container": "#1d2024","surface-container-high": "#282a2f","on-primary": "#002f66",
+          "on-primary-container": "#d7e2ff","on-error": "#690005","primary": "#abc7ff",
+          "secondary-fixed": "#6bfe9c","tertiary-container": "#42474d","on-secondary": "#00391a",
+          "on-tertiary-fixed-variant": "#42474d","outline": "#8c919d","on-primary-fixed": "#001b3f",
+          "surface-container-lowest": "#0b0e11","inverse-on-surface": "#191c1e","on-tertiary-container": "#dee3ea",
+          "secondary": "#4ae183","tertiary": "#c2c7ce","surface-variant": "#424751",
+          "primary-fixed-dim": "#abc7ff","surface-container-highest": "#33353a"
+        },
+        fontFamily: {"headline": ["Manrope"],"body": ["Inter"],"label": ["Inter"]},
+        borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .glass-morphism {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .floating-anim { animation: float 8s ease-in-out infinite; }
+  @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-30px) rotate(8deg); } }
+  .grid-bg {
+    background-image: radial-gradient(circle at 2px 2px, rgba(171, 199, 255, 0.05) 1px, transparent 0);
+    background-size: 40px 40px;
+  }
+  .glow-pulse { animation: pulse-glow 4s ease-in-out infinite; }
+  @keyframes pulse-glow { 0%, 100% { opacity: 0.3; filter: blur(40px); } 50% { opacity: 0.6; filter: blur(60px); } }
+  .perspective-2000 { perspective: 2000px; }
+  .preserve-3d { transform-style: preserve-3d; }
+  .card-stack-rotate { transform: rotateX(10deg) rotateY(-5deg) translateZ(0); }
+  #mobile-menu { display: none; }
+  #mobile-menu.open { display: flex; }
+</style>
+</head>
+<body class="bg-background font-body text-on-background selection:bg-primary/30 grid-bg min-h-screen">
+
+<!-- UNIFIED NAV -->
+<nav class="fixed top-0 w-full z-50 bg-background/60 backdrop-blur-xl border-b border-white/5">
+  <div class="flex justify-between items-center px-6 py-4 max-w-[1920px] mx-auto">
+    <a href="index.html" class="text-xl font-black text-primary tracking-tighter flex items-center gap-2">
+      <span class="w-7 h-7 bg-primary rounded-lg flex items-center justify-center text-background">
+        <span class="material-symbols-outlined !text-base">biotech</span>
+      </span>
+      DermOS
+    </a>
+    <div class="hidden md:flex items-center gap-6">
+      <a class="font-headline tracking-tight font-bold text-xs uppercase text-on-surface-variant hover:text-primary transition-colors" href="explorer.html">Dashboard</a>
+      <a class="font-headline tracking-tight font-bold text-xs uppercase text-on-surface-variant hover:text-primary transition-colors" href="upload.html">Upload</a>
+      <a class="font-headline tracking-tight font-bold text-xs uppercase text-on-surface-variant hover:text-primary transition-colors" href="result.html">Result</a>
+      <a class="font-headline tracking-tight font-bold text-xs uppercase text-primary border-b-2 border-primary pb-1" href="history.html">History</a>
+      <a class="font-headline tracking-tight font-bold text-xs uppercase text-on-surface-variant hover:text-primary transition-colors" href="explorer.html">Explorer</a>
+      <a class="font-headline tracking-tight font-bold text-xs uppercase text-on-surface-variant hover:text-primary transition-colors" href="account.html">Account</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="account.html" class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+        <span class="material-symbols-outlined">account_circle</span>
+      </a>
+      <button id="mobile-nav-btn" class="md:hidden p-2 hover:bg-white/5 rounded-lg transition-all text-on-surface-variant">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="md:hidden flex-col px-6 pb-4 gap-3 border-t border-white/5 bg-background/95">
+    <a class="block py-2 font-headline font-bold text-xs uppercase text-on-surface-variant hover:text-primary" href="explorer.html">Dashboard</a>
+    <a class="block py-2 font-headline font-bold text-xs uppercase text-on-surface-variant hover:text-primary" href="upload.html">Upload</a>
+    <a class="block py-2 font-headline font-bold text-xs uppercase text-on-surface-variant hover:text-primary" href="result.html">Result</a>
+    <a class="block py-2 font-headline font-bold text-xs uppercase text-primary" href="history.html">History</a>
+    <a class="block py-2 font-headline font-bold text-xs uppercase text-on-surface-variant hover:text-primary" href="explorer.html">Explorer</a>
+    <a class="block py-2 font-headline font-bold text-xs uppercase text-on-surface-variant hover:text-primary" href="account.html">Account</a>
+  </div>
+</nav>
+
+<!-- Glowing Orbs -->
+<div class="fixed inset-0 overflow-hidden -z-10 pointer-events-none">
+  <div class="absolute top-[10%] left-[10%] w-[40rem] h-[40rem] bg-primary/10 rounded-full glow-pulse"></div>
+  <div class="absolute bottom-[20%] right-[5%] w-[35rem] h-[35rem] bg-secondary/5 rounded-full glow-pulse" style="animation-delay: -2s;"></div>
+</div>
+
+<main class="pt-32 pb-48 px-8 flex flex-col items-center relative z-10">
+  <!-- Editorial Header -->
+  <header class="w-full max-w-5xl mb-20">
+    <span class="font-label text-secondary font-bold tracking-[0.3em] uppercase text-[10px] mb-4 block">Temporal Clinical Mapping</span>
+    <h1 class="font-headline text-6xl md:text-7xl font-extrabold text-white tracking-tighter leading-none mb-6">Longitudinal History</h1>
+    <p class="text-on-surface-variant max-w-xl font-light text-xl leading-relaxed">
+      A comprehensive multidimensional view of dermatological progression and patient response markers.
+    </p>
+  </header>
+
+  <!-- Dynamic History from localStorage -->
+  <div class="w-full max-w-5xl mb-16" id="dynamic-history">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- Static 3D Stack (Demo when no history) -->
+  <div class="relative w-full max-w-6xl perspective-2000 preserve-3d" id="demo-history">
+    <!-- Floating 3D Medical Assets -->
+    <div class="absolute -left-24 top-0 floating-anim text-primary/10 pointer-events-none">
+      <span class="material-symbols-outlined !text-[12rem]" style="font-variation-settings: 'FILL' 1;">pill</span>
+    </div>
+    <div class="absolute -right-24 top-40 floating-anim text-secondary/10 pointer-events-none" style="animation-delay: -3s;">
+      <span class="material-symbols-outlined !text-[10rem]" style="font-variation-settings: 'FILL' 1;">vaccines</span>
+    </div>
+
+    <!-- Stack Container -->
+    <div class="flex flex-col gap-16 card-stack-rotate pb-32">
+      <!-- Card 1 -->
+      <div class="group relative w-full glass-morphism rounded-[2.5rem] p-10 transition-all duration-700 hover:-translate-y-8 hover:bg-white/5 cursor-pointer shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)]">
+        <div class="flex flex-col lg:flex-row gap-12 items-center">
+          <div class="w-full lg:w-64 h-64 rounded-3xl overflow-hidden border border-white/10 relative group-hover:border-primary/50 transition-colors">
+            <img alt="Human skin lesion detail" class="w-full h-full object-cover grayscale-[0.2] transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOFJ4QZ93T7ipiyzFKU1VP4qnFdeRV6RiLQoA_-CoOP9yOfinBJtscxPVtHExta_KL4HiBav14l_zJ63xQ6vQd1RWjztUqDZ3t3gM7a4fsBwVn1IMj_NgyhGuSwQUCPEzPWKPWHQM6dMXgiZkSs7W-O5L06IY4TPtJvXdnrnyf9SmkkQeT9Xj1QlGwmaOTpEqMulPd39_oj7PYVbzo3xaYkf8utEq4jcGluT_sJrYESjMVF5I_PtFTrVrgJg0f0aqw3jgamMRk_xY"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+          </div>
+          <div class="flex-1 space-y-6">
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="h-2 w-2 rounded-full bg-error animate-pulse"></span>
+                  <span class="font-label text-[10px] font-black text-error uppercase tracking-widest bg-error/10 px-3 py-1 rounded-full border border-error/20">Action Required</span>
+                </div>
+                <h3 class="font-headline text-4xl font-bold text-white tracking-tight">Melanocytic Nevus</h3>
+                <p class="text-on-surface-variant mt-2 font-medium">Upper Lumbar Region · 4.2mm</p>
+              </div>
+              <div class="text-right">
+                <p class="font-headline font-black text-3xl text-primary">OCT 24</p>
+                <p class="text-xs font-bold text-on-surface-variant tracking-widest uppercase mt-1">2024 Cycle</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-8 py-6 border-y border-white/5">
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-2">Severity</p>
+                <p class="font-headline font-black text-2xl text-error">Grade 2</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-2">Stability</p>
+                <p class="font-headline font-black text-2xl text-secondary">92%</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-2">Probability</p>
+                <p class="font-headline font-black text-2xl text-primary">0.988</p>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <button onclick="window.location.href='result.html'" class="flex-1 py-5 bg-primary text-background rounded-2xl font-black text-sm tracking-widest uppercase hover:bg-white transition-all active:scale-[0.98] shadow-[0_0_30px_rgba(171,199,255,0.3)]">
+                View Full Report
+              </button>
+              <button class="w-16 h-16 flex items-center justify-center rounded-2xl border border-white/10 hover:border-primary/50 text-white transition-all">
+                <span class="material-symbols-outlined">share</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="group relative w-full max-w-5xl mx-auto glass-morphism rounded-[2.5rem] p-10 opacity-60 translate-x-12 transition-all duration-700 hover:opacity-100 hover:translate-x-0 hover:-translate-y-8 cursor-pointer border-white/5">
+        <div class="flex flex-col lg:flex-row gap-12 items-center">
+          <div class="w-full lg:w-56 h-56 rounded-3xl overflow-hidden border border-white/5 relative group-hover:border-secondary/50">
+            <img alt="Microscopic skin analysis" class="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvbZTGOoDLfNEMH2M_er8rMCtqVxDpdWNJpSZFZiuRXnrIBzy-A5qv1ZGHaLlo4WYUxm9SJYVDYOSP-OxSvI5sTmJTanSALnB71O2t57_hPCocrLT0kwbZ6_cC_FdUb2U8A2ndIP6QrNE2ChCEJ-EpYvFq6mUBsPt8N7tmneCM11rfHkzaKoWhPMUz0YRPgR_tyTzwx55C66Q0EjEn2F_LMjIT9NTXQdLl8drljt8pzzDiHuZ7sUF8W3htMVUxSVrI24Jko0gYlh4"/>
+          </div>
+          <div class="flex-1 space-y-6">
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="font-label text-[10px] font-black text-secondary uppercase tracking-widest bg-secondary/10 px-3 py-1 rounded-full border border-secondary/20">Resolved</span>
+                </div>
+                <h3 class="font-headline text-3xl font-bold text-white/80 group-hover:text-white transition-colors">Contact Dermatitis</h3>
+                <p class="text-on-surface-variant mt-2 font-medium">Left Forearm · Histamine Response</p>
+              </div>
+              <div class="text-right">
+                <p class="font-headline font-black text-2xl text-on-surface-variant group-hover:text-secondary transition-colors">JUN 12</p>
+                <p class="text-[10px] font-bold text-on-surface-variant/40 tracking-widest uppercase">2024 Cycle</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="group relative w-full max-w-4xl mx-auto glass-morphism rounded-[2.5rem] p-10 opacity-30 translate-x-24 transition-all duration-700 hover:opacity-100 hover:translate-x-0 hover:-translate-y-8 cursor-pointer border-white/5">
+        <div class="flex flex-col lg:flex-row gap-12 items-center">
+          <div class="w-full lg:w-48 h-48 rounded-3xl overflow-hidden border border-white/5">
+            <img alt="Archived skin pathology" class="w-full h-full object-cover grayscale opacity-40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOle-kkEkJ-uYhRtVAPp37qeH6KrZnhn-mP361wWISGrbuZ5wlXURcriVDJDt_adhshI6YwsH2xyfAOZRBPauvrb7Qeacaq92LFus54796_YXHhXPcFz5Xcg2w3tOzb8FdXTJ0KVEoQDCVjClNzSJsHqKzHzRFjCTzx3s9bhN44hswmrKpntVSt5EbvvQ-hrQrLVOIRgc-1pDqc0cq5lGgkj6goZdpujj0qDyVUD2r6tDCwMzZ8LgMuIutozne0UwF0848wCNbWDQ"/>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-center">
+              <div>
+                <span class="font-label text-[10px] font-black text-on-surface-variant/60 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/10 mb-3 block w-fit">Archived</span>
+                <h3 class="font-headline text-2xl font-bold text-white/50 group-hover:text-white transition-colors">Seborrheic Keratosis</h3>
+              </div>
+              <div class="text-right">
+                <p class="font-headline font-black text-xl text-on-surface-variant/40 group-hover:text-primary transition-colors">JAN 02</p>
+                <p class="text-[10px] font-bold text-on-surface-variant/20 tracking-widest uppercase">2024 Cycle</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start New Scan CTA -->
+  <div class="mt-16 w-full max-w-5xl">
+    <div class="glass-morphism rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-white/5">
+      <div>
+        <h3 class="font-headline text-2xl font-extrabold text-white mb-2">Start a new scan</h3>
+        <p class="text-on-surface-variant text-sm">Upload dermoscopic images for analysis</p>
+      </div>
+      <button onclick="window.location.href='upload.html'" class="px-10 py-4 bg-primary text-background font-black rounded-2xl hover:bg-white transition-all active:scale-95 tracking-widest uppercase text-sm whitespace-nowrap flex items-center gap-3">
+        <span class="material-symbols-outlined">upload_file</span> Upload Image
+      </button>
+    </div>
+  </div>
+</main>
+
+<!-- Interactive Timeline Footer -->
+<footer class="fixed bottom-12 w-full z-40 px-8 flex justify-center">
+  <div class="w-full max-w-4xl glass-morphism rounded-3xl p-6 border-white/10 shadow-[0_-40px_100px_rgba(0,0,0,0.6)]">
+    <div class="relative flex items-center justify-between px-10 h-16">
+      <div class="absolute left-10 right-10 h-[1px] bg-white/10 top-1/2 -translate-y-1/2"></div>
+      <div class="absolute left-10 w-[85%] h-[2px] bg-gradient-to-r from-primary via-secondary to-primary top-1/2 -translate-y-1/2 rounded-full shadow-[0_0_15px_rgba(171,199,255,0.4)]"></div>
+      <div class="relative z-10 flex flex-col items-center group cursor-pointer">
+        <div class="w-4 h-4 rounded-full bg-primary ring-8 ring-primary/10 mb-2 group-hover:scale-150 transition-transform"></div>
+        <span class="text-[9px] font-black text-primary uppercase tracking-widest">Jan 02</span>
+      </div>
+      <div class="relative z-10 flex flex-col items-center group cursor-pointer">
+        <div class="w-3 h-3 rounded-full bg-white/20 group-hover:bg-primary transition-all mb-2"></div>
+        <span class="text-[9px] font-bold text-on-surface-variant/60 uppercase tracking-widest group-hover:text-on-surface transition-colors">Mar 15</span>
+      </div>
+      <div class="relative z-10 flex flex-col items-center group cursor-pointer">
+        <div class="w-4 h-4 rounded-full bg-secondary ring-8 ring-secondary/10 mb-2 group-hover:scale-150 transition-transform"></div>
+        <span class="text-[9px] font-black text-secondary uppercase tracking-widest">Jun 12</span>
+      </div>
+      <div class="relative z-10 flex flex-col items-center group cursor-pointer">
+        <div class="w-3 h-3 rounded-full bg-white/20 group-hover:bg-primary transition-all mb-2"></div>
+        <span class="text-[9px] font-bold text-on-surface-variant/60 uppercase tracking-widest group-hover:text-on-surface transition-colors">Aug 30</span>
+      </div>
+      <div class="relative z-10 flex flex-col items-center group cursor-pointer -translate-y-2">
+        <div class="w-8 h-8 rounded-full bg-primary shadow-[0_0_20px_rgba(171,199,255,0.6)] flex items-center justify-center mb-2 scale-110 group-hover:scale-125 transition-transform">
+          <span class="material-symbols-outlined text-background !text-sm font-bold">radar</span>
+        </div>
+        <span class="text-[9px] font-black text-primary uppercase tracking-widest">Active</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('mobile-nav-btn').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  });
+
+  // Load and render history from localStorage
+  window.addEventListener('load', () => {
+    const history = JSON.parse(localStorage.getItem('dermos_history') || '[]');
+    const container = document.getElementById('dynamic-history');
+    const demoSection = document.getElementById('demo-history');
+
+    if (history.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+
+    // Hide demo and show real history
+    demoSection.style.display = 'none';
+
+    container.innerHTML = `
+      <h2 class="font-headline text-2xl font-bold text-white mb-8 flex items-center gap-3">
+        <span class="material-symbols-outlined text-secondary">history</span>
+        Your Scan History (${history.length})
+      </h2>
+      <div class="flex flex-col gap-6">
+        ${history.map((entry, idx) => {
+          const date = new Date(entry.timestamp);
+          const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+          const severity = (entry.severity || '').toUpperCase();
+          const severityColor = severity === 'MILD' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+            : severity === 'MODERATE' ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
+            : 'text-red-400 bg-red-500/10 border-red-500/20';
+          const imgHtml = entry.imageDataUrl
+            ? `<img src="${entry.imageDataUrl}" alt="Scan" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>`
+            : `<div class="w-full h-full flex items-center justify-center bg-white/5"><span class="material-symbols-outlined text-4xl text-white/20">image_not_supported</span></div>`;
+
+          return `
+          <div class="group glass-morphism rounded-[2rem] p-8 flex flex-col md:flex-row gap-8 items-center hover:bg-white/5 transition-all cursor-pointer" onclick="window.location.href='result.html'">
+            <div class="w-full md:w-40 h-40 rounded-2xl overflow-hidden border border-white/10 group-hover:border-primary/40 transition-colors flex-shrink-0">
+              ${imgHtml}
+            </div>
+            <div class="flex-1 space-y-3">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <h3 class="font-headline text-2xl font-bold text-white">${(entry.diagnosis || 'Unknown').toUpperCase()}</h3>
+                  <p class="text-on-surface-variant text-sm mt-1">${entry.bodyPart || ''} · ${entry.patientGender || ''} · Age ${entry.patientAge || '?'}</p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <p class="font-headline font-black text-lg text-primary">${dateStr}</p>
+                  <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${severityColor}">${severity || 'Unknown'}</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-6">
+                <div>
+                  <p class="text-[10px] text-on-surface-variant/50 uppercase font-bold tracking-widest">Confidence</p>
+                  <p class="font-headline font-black text-xl text-primary">${(entry.confidence || 0).toFixed(1)}%</p>
+                </div>
+                <div>
+                  <p class="text-[10px] text-on-surface-variant/50 uppercase font-bold tracking-widest">Region</p>
+                  <p class="font-headline font-black text-xl text-secondary">${entry.patientRegion || '---'}</p>
+                </div>
+                <div class="ml-auto">
+                  <span class="text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-widest">Scan #${history.length - idx}</span>
+                </div>
+              </div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  });
+</script>
+</body></html>
